@@ -1,0 +1,168 @@
+# server
+import socket
+import server_func as sf
+import threading
+import time
+
+c=[]
+######################### Connection #################################
+
+s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+
+host = "127.0.0.1"  # ip of socket
+port=8080           # port no of socket
+
+s.bind((host,port)) # creating socket
+
+s.listen(5)         # listening for connections
+print("listening...")
+
+#######################################################################
+
+#c, addr = s.accept()  # Establish connection with client.
+#print('Got connection from', addr)
+#c.send("Thank you for connecting".encode())
+
+def recieve():
+    while True:
+        connection, addr = s.accept()  # Establish connection with client.
+        print('Got connection from', addr)
+        connection.send("Thank you for connecting".encode())
+        #c.append(connection)
+        thread=threading.Thread(target=server,args=(connection,))
+        thread.start()
+
+def server(c):
+    while True :
+
+
+        ########################### Menu ##############################
+        print ("menu")
+
+        menu=c.recv(32).decode()
+        print(menu)
+        ###################### Login ########################
+
+        if menu=='Login':
+
+            auth=c.recv(1024).decode()
+            print(auth)
+            authenticate=sf.authenticate(auth)
+            print(authenticate)
+            c.send(str(authenticate).encode())
+            if(authenticate!="Incorrect Username or Password"):
+                while True:
+                    log_choice=c.recv(128).decode()
+
+                    if (log_choice == 'Order'):
+                        drinks, d_cost, food, f_cost = sf.order()
+
+                        time.sleep(0.2)
+                        c.send(str(drinks).encode())
+                        time.sleep(0.3)
+                        print('drinks', drinks)
+                        c.send(str(food).encode())
+                        time.sleep(0.4)
+                        print('food', food)
+                        c.send(str(d_cost).encode())
+                        time.sleep(0.4)
+                        print('d_cost', d_cost)
+                        c.send(str(f_cost).encode())
+                        time.sleep(0.4)
+                        print('f_cost', f_cost)
+
+                        cus_dets=c.recv(1024).decode()
+                        ordered=c.recv(2048).decode()
+                        if(cus_dets!='No' and ordered!='Orders'):
+                            sf.ordering(cus_dets,ordered)
+
+                        continue
+
+                    elif (log_choice == 'Order History'):
+                        cus_dets=c.recv(1024).decode()
+                        history=sf.order_history(cus_dets)
+                        c.send(str(history).encode())
+                        continue
+
+                    elif (log_choice=='View Details'):
+                        auth = c.recv(1024).decode()
+                        print(auth)
+                        authenticate = sf.authenticate(auth)
+                        c.send(str(authenticate).encode())
+                        continue
+
+                    elif(log_choice == 'Edit Details'):
+                        edit_det=c.recv(1024).decode()
+                        sf.edit(edit_det)
+                        continue
+
+                    elif (log_choice == 'Change Password'):
+                        while True:
+                            curr_pass=str(c.recv(1024).decode())
+                            if curr_pass=='error code 913372':
+                                break
+                            check=sf.authenticate(curr_pass)
+                            print (check)
+                            if(check=="Incorrect Username or Password"):
+                                c.send("False".encode())
+                                continue
+
+                            else:
+                                c.send("True".encode())
+                                new_pass = str(c.recv(1024).decode())
+                                print(new_pass)
+                                sf.chng_pass(new_pass, curr_pass)
+                                break
+                        continue
+
+                    elif (log_choice == 'Feedback'):
+                        feed=str(c.recv(4096).decode())
+                        print("feed = ", feed)
+                        sf.feedback(feed)
+                        continue
+
+                    elif (log_choice == 'Loggout'):
+                        out=c.recv(128).decode()
+                        print("logg out = ",out)
+                        if out == True:
+                            print("Logging out")
+                            break
+                        else:
+                            continue
+                    break
+        ######################################################
+
+        ###################### Create account ########################
+
+        elif menu=='Create Account':
+            print("Creating acc")
+            crd=c.recv(1024).decode()
+            if (crd != "return code 913372"):
+                new_acc=sf.new_acc(crd)
+                c.send(new_acc.encode())
+            else:
+                continue
+
+        ##############################################################
+
+        elif menu == 'Exit' or menu == 'None':
+            ext=bool(c.recv(32).decode())
+            print("Exit = ")
+            if (ext=='Cancel'):
+                print(ext)
+                break
+            else:
+                print(ext)
+
+        ######################## Menu end #############################
+        print(menu)
+        cont=bool(c.recv(8).decode())
+        print("cont = ",cont)
+
+        if cont==True:
+            continue
+        if cont==False:
+            c.close() # Close
+            break
+
+recieve()
