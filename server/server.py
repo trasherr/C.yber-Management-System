@@ -135,14 +135,22 @@ def server(c):
         ###################### Create account ########################
 
         elif menu=='Create Account':
-            print("Creating acc")
-            crd=c.recv(1024).decode()
-            if (crd != "return code 913372"):
-                new_acc=sf.new_acc(crd)
-                c.send(new_acc.encode())
-            else:
-                continue
-
+            while True:
+                usr=c.recv(32).decode()
+                print(usr)
+                if usr!="cancel code 913372":
+                    check=sf.check(usr)
+                    c.send(str(check).encode())
+                    if check=="true":
+                        print("Creating acc")
+                        crd=c.recv(1024).decode()
+                        if (crd != "return code 913372"):
+                            new_acc=sf.new_acc(crd)
+                            c.send(new_acc.encode())
+                    else :
+                        continue
+                else:
+                    break
         ##############################################################
 
         elif menu == 'Exit' or menu == 'None':

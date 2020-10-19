@@ -2,6 +2,7 @@
 import socket
 import client_func as cf
 import PySimpleGUI as sg
+from win32api import GetSystemMetrics
 import time
 
 ###################################theme browser################################
@@ -174,26 +175,38 @@ while True :
                         break
                     else:
                         continue
-
+            cont = True
     #########################################################
 
     ###################### Create account ########################
 
     elif menu=='Create Account':
 
-        details=cf.create_acc()
-        s.send(str(details).encode())
-        if (details != "return code 913372"):
-            new_acc=bool(False)
-            new_acc=bool(s.recv(1024).decode)
-            if (new_acc==True):
-                sg.popup_ok("Account Successfully created !",keep_on_top=True)
+        while True:
+            usr=cf.usercheck()
+            print(usr)
+            s.send(str(usr).encode())
+            if usr!="cancel code 913372":
+                check=s.recv(16).decode()
+                if check == "true" :
+                    details=cf.create_acc(usr)
+                    s.send(str(details).encode())
+                    if (details != "return code 913372"):
+                        new_acc=bool(False)
+                        new_acc=bool(s.recv(1024).decode)
+                        if (new_acc==True):
+                            sg.popup_ok("Account Successfully created !",keep_on_top=True)
+                            break
 
+                        else :
+                            sg.popup_ok("Some error occured !",keep_on_top=True)
+                            break
+
+                else :
+                    sg.popup_ok("Username already taken !\nTry a different one",keep_on_top=True)
             else :
-                sg.popup_ok("Some error occured !",keep_on_top=True)
-            cont=True
-        else :
-            continue
+                break
+
     ####################################################
 
     ###################### Exit ########################

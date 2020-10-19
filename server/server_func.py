@@ -57,6 +57,29 @@ def authenticate(auth):
         if match==False:
             return "Incorrect Username or Password"
 
+def check(usr):
+    with open("usr.dat", "r") as file:
+        data = file.readlines()
+        for line in data:
+            det = str(line)
+            print(det)
+
+            # checking data in each line
+
+            for i in range(0, len(usr)):
+                if det[i] == usr[i]:
+                    match = True
+
+                else:
+                    match = False
+                    break
+
+            if match == True and det[len(usr)]==':':
+                return 'false'
+
+        if match == False:
+            return "true"
+
 
 def new_acc(crd):
     with open("usr.dat","a+") as file:

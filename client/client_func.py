@@ -65,7 +65,40 @@ def login():
     print(comstr)
     return comstr
 
-def create_acc():
+def usercheck():
+    check = str('false')
+    sg.change_look_and_feel(th)
+    layout = [
+        [sg.Text("")],
+        [sg.Text('Create Account \n', font='Ariel 32')],
+        [sg.Text("")],
+        [sg.Text('Username', font="Ariel 20", size=(10, 1)), sg.InputText('Username', font="Ariel 20")],
+        [sg.Text("(Username must be of atleast 4 characters)")],
+        [sg.Text("")],
+        [sg.Submit( size=(20, 2), font="Ariel 20"), sg.Button("Cancel", size=(20, 2), font="Ariel 20")]
+
+    ]
+    usrname = sg.Window('Create Account', layout, keep_on_top=True, size=(GetSystemMetrics(0), GetSystemMetrics(1)),
+                        element_justification='c')
+    while True:
+        button, values = usrname.read()
+        if (button == sg.WIN_CLOSED or button == 'Cancel'):
+            usr = "cancel code 913372"
+            break
+        if (button == 'Submit'):
+            if (len(values[0]) < 4):
+                sg.popup_ok("Username must be of atleast 4 characters !", keep_on_top=True)
+            elif (len(values[0]) > 20):
+                sg.popup_ok("Username must be of atmost 20 characters !", keep_on_top=True)
+
+            else:
+                usr = values[0]
+                break
+
+    usrname.Close()
+    return usr
+
+def create_acc(usr):
     wrong_text=''
     sg.change_look_and_feel(th)
 
@@ -73,7 +106,7 @@ def create_acc():
         [sg.Text("")],
         [sg.Text('Create Account \n',font='Ariel 32')],
         [sg.Text("")],
-        [sg.Text('Username',font="Ariel 20", size=(10, 1)), sg.InputText('Username',font="Ariel 20")],
+        [sg.Text('Username',font="Ariel 20", size=(10, 1)), sg.Text(f'{usr}',font="Ariel 20")],
         [sg.Text("")],
         [sg.Text('First name',font="Ariel 20", size=(10, 1)), sg.InputText('First name',font="Ariel 20")],
         [sg.Text("")],
@@ -93,16 +126,17 @@ def create_acc():
     while True :
         button, values = form.read()
 
+
         if (button == "Cancel" or button == sg.WIN_CLOSED):
             form.Close()
             return "return code 913372"
 
-        if len(values[0]) >= 4 and len(values[1]) >= 3 and len(values[2]) >= 3 and len(values[5]) >= 8 and len(values[3]) < 50 and len(values[4]) == 10 :
+        if len(values[0]) >= 4 and len(values[0]) >= 3 and len(values[1]) >= 3 and len(values[4]) >= 8 and len(values[2]) < 50 and len(values[3]) == 10 :
 
-            if values[5] == values[6]:
-                details = values[0] + '::' + values[5] + '::' + values[1] + '::' + values[2] + '::' + values[3] + '::' + values[4]
+            if values[4] == values[5]:
+                details = usr + '::' + values[4] + '::' + values[0] + '::' + values[1] + '::' + values[2] + '::' + values[3]
                 form.Close()
-                sg.popup_ok(f"Creating Account with username {values[0]}",keep_on_top=True)
+                sg.popup_ok(f"Creating Account with username {usr}",keep_on_top=True)
                 return details
 
             else:
