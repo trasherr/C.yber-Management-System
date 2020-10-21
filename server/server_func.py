@@ -18,7 +18,7 @@ def ordering(cus_dets,ordered):
         for k in range (0,len(drinks)):
             if (ordered[i]==drinks[k]):
                 orders=orders+f"\n{drinks[k]} {d_cost[k]} "
-                total=total+int(d_cost[i])
+                total=total+int(d_cost[k])
 
         for k in range(0, len(food)):
             if (ordered[i]==food[k]):
@@ -142,15 +142,19 @@ def order_history(cus_dets):
             det=str(line)
             print (det)
 
-            if cus_dets in det:
+            if cus_dets in det :
                 flag = True
-            if 'Total' in det:
+                his = '\n=================' + his
+
+            elif 'Total' in det:
+                his =  f'\n{det}\n----------------'+his
+                his = '\n\n=================' + his
                 flag = False
 
-            if ( flag == True and cus_dets not in det):
+            elif ( flag == True and cus_dets not in det):
                 if("Name ::" not in det):
-                    his=his+f'\n{det}'
+                    his=f'\n{det}'+his
     if his=='':
         return "No Orders"
     else:
-        return his
+        return his[:2000]

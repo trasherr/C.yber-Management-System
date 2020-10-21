@@ -76,7 +76,7 @@ def server(c):
                         continue
 
                     elif (log_choice == 'Order History'):
-                        cus_dets=c.recv(1024).decode()
+                        cus_dets=c.recv(256).decode()
                         history=sf.order_history(cus_dets)
                         c.send(str(history).encode())
                         continue

@@ -469,12 +469,18 @@ def order_history(history):
         cus_dets = "Username :: " + crdent.uname #+ "\nName ::" + crdent.fname + ' ' + crdent.lname
         return cus_dets
     else :
+        for i in range (len(history)-1,0,-1):
+            if history[i]=="=":
+                last=i
+                break
         sg.change_look_and_feel(th)
         his=sg.Window('Order History', keep_on_top=True, size=(gsys(0), gsys(1)),element_justification='c')
         layout=[
             [sg.Frame(layout=[
-                [sg.Button("< Back",size=(10,2),font="Ariel 12")],
-                [sg.Text("",size=(3,3)),sg.Text(f"{history[0:200]}",font='Ariel 12',size=(30,30)),sg.Text(f"{history[200:]}",font='Ariel 12',size=(30,30))]
+                [sg.Text("")],
+                [sg.Text("",size=(28,3)),sg.Button("< Back",size=(10,2),font="Ariel 12")],
+                [sg.Text("",size=(3,3)),sg.Multiline(f"{history[:last]}",size=(60,30)),sg.Text("",size=(3,3))],
+                [sg.Text("")]
                 ],title='Order History')
             ]
         ]
