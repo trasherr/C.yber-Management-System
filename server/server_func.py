@@ -11,7 +11,7 @@ def order():
 
 def ordering(cus_dets,ordered):
     ordered=eval(ordered)
-    orders=cus_dets+f"\n{dt.datetime.now().strftime(' %H:%M:%S / %Y-%m-%d ')}"
+    orders=cus_dets+f"\n{dt.datetime.now().strftime('%H:%M:%S / %Y-%m-%d')}"
     total=0
 
     for i in range (0,len(ordered)):
@@ -82,6 +82,7 @@ def check(usr):
 
 
 def new_acc(crd):
+    print(crd)
     with open("usr.dat","a+") as file:
         file.seek(0)
         file.write("\n")

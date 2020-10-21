@@ -1,16 +1,12 @@
 # client functions
 import msvcrt
 import PySimpleGUI as sg
-from win32api import GetSystemMetrics
+from win32api import GetSystemMetrics as gsys
 
 th=''
 def set_theme(theme):
     global th
     th = theme
-
-print("Width =", GetSystemMetrics(0))
-print("Height =", GetSystemMetrics(1))
-
 
 class crdent():
     uname=''
@@ -24,10 +20,10 @@ order=[]
 
 def menu():
     sg.change_look_and_feel(th)
-    menu = sg.Window('Main Menu', keep_on_top=True, size=(GetSystemMetrics(0),GetSystemMetrics(1)), element_justification='c') # begin with a blank form
+    menu = sg.Window('Main Menu', keep_on_top=True, size=(gsys(0),gsys(1)), element_justification='c') # begin with a blank form
 
     layout = [
-        [sg.Text("\n"*int(GetSystemMetrics(1)/100))],
+        [sg.Text("\n"*int(gsys(1)/100))],
         [sg.Button('Login',size=(32,3), font="Ariel 32", button_color=('white','lime'))],
         [sg.Text('')],
         [sg.Button('Create Account',size=(32,3), font="Ariel 32",button_color=('white','blue'))],
@@ -42,10 +38,10 @@ def menu():
 
 def login():
     sg.change_look_and_feel(th)
-    form = sg.Window('Main Menu', keep_on_top=True, size=(GetSystemMetrics(0),GetSystemMetrics(1)), element_justification='c')  # begin with a blank form
+    form = sg.Window('Main Menu', keep_on_top=True, size=(gsys(0),gsys(1)), element_justification='c')  # begin with a blank form
 
     layout = [
-        [sg.Text("\n" * int(GetSystemMetrics(1) / 100))],
+        [sg.Text("\n" * int(gsys(1) / 100))],
         [sg.Text('Login \n',font="Ariel 32")],
         [sg.Text("")],
         [sg.Text('Name',font="Ariel 20", size=(10, 1)), sg.InputText('Username',font="Ariel 20")],
@@ -78,7 +74,7 @@ def usercheck():
         [sg.Submit( size=(20, 2), font="Ariel 20"), sg.Button("Cancel", size=(20, 2), font="Ariel 20")]
 
     ]
-    usrname = sg.Window('Create Account', layout, keep_on_top=True, size=(GetSystemMetrics(0), GetSystemMetrics(1)),
+    usrname = sg.Window('Create Account', layout, keep_on_top=True, size=(gsys(0), gsys(1)),
                         element_justification='c')
     while True:
         button, values = usrname.read()
@@ -122,7 +118,7 @@ def create_acc(usr):
         [sg.Text("\n")],
         [sg.Submit(size=(20,2),font="Ariel 20"),sg.Cancel(size=(20,2),font="Ariel 20")]
     ]
-    form = sg.Window('Create Account',layout, keep_on_top=True, size=(GetSystemMetrics(0), GetSystemMetrics(1)),element_justification='c')  # begin with a blank form
+    form = sg.Window('Create Account',layout, keep_on_top=True, size=(gsys(0), gsys(1)),element_justification='c')  # begin with a blank form
     while True :
         button, values = form.read()
 
@@ -192,7 +188,7 @@ def crdfinder(log_crd):
 
 def edit():
     sg.change_look_and_feel(th)
-    form = sg.Window('Edit Details', keep_on_top=True, size=(GetSystemMetrics(0),GetSystemMetrics(1)), element_justification='c')  # begin with a blank form
+    form = sg.Window('Edit Details', keep_on_top=True, size=(gsys(0),gsys(1)), element_justification='c')  # begin with a blank form
 
     layout = [
         [sg.Text("")],
@@ -243,7 +239,7 @@ def view(log_crd):
     crdfinder(log_crd)
 
     sg.change_look_and_feel(th)
-    pdet = sg.Window('View Details', keep_on_top=True, size=(GetSystemMetrics(0),GetSystemMetrics(1)), element_justification='c')  # begin with a blank form
+    pdet = sg.Window('View Details', keep_on_top=True, size=(gsys(0),gsys(1)), element_justification='c')  # begin with a blank form
 
     layout = [
         [sg.Text("")],
@@ -263,7 +259,7 @@ def view(log_crd):
 
 def curr_passwd():
     sg.change_look_and_feel(th)
-    passwd = sg.Window('Change Password', keep_on_top=True, size=(GetSystemMetrics(0),GetSystemMetrics(1)), element_justification='c')  # begin with a blank form
+    passwd = sg.Window('Change Password', keep_on_top=True, size=(gsys(0),gsys(1)), element_justification='c')  # begin with a blank form
 
     layout = [
 
@@ -285,7 +281,7 @@ def curr_passwd():
 
 def chng_passwd(log_crd):
     sg.change_look_and_feel(th)
-    passwd = sg.Window('Change Password', keep_on_top=True, size=(GetSystemMetrics(0),GetSystemMetrics(1)), element_justification='c')  # begin with a blank form
+    passwd = sg.Window('Change Password', keep_on_top=True, size=(gsys(0),gsys(1)), element_justification='c')  # begin with a blank form
 
     layout = [
         [sg.Text('')],
@@ -322,7 +318,7 @@ def chng_passwd(log_crd):
 def feedback():
     fed_bck=' '
     sg.change_look_and_feel(th)
-    feed = sg.Window('Feedback', keep_on_top=True, size=(GetSystemMetrics(0),GetSystemMetrics(1)), element_justification='c')  # begin with a blank form
+    feed = sg.Window('Feedback', keep_on_top=True, size=(gsys(0),gsys(1)), element_justification='c')  # begin with a blank form
 
     layout = [
         [sg.Text('')],
@@ -363,7 +359,7 @@ def loggedin(log_crd):
     crdfinder(log_crd)
 
     sg.change_look_and_feel(th)
-    options = sg.Window('View Details', keep_on_top=True, size=(GetSystemMetrics(0),GetSystemMetrics(1)), element_justification='c')  # begin with a blank form
+    options = sg.Window('View Details', keep_on_top=True, size=(gsys(0),gsys(1)), element_justification='c')  # begin with a blank form
 
     layout = [
         [sg.Text('')],
@@ -419,7 +415,7 @@ def order(drinks,d_cost,food,f_cost):
             [sg.Text("")],
             [sg.Button("Show Total",font='Ariel 20',size=(10,2)),sg.Button("Order",font='Ariel 20',size=(10,2)),sg.Button("Cancel",font='Ariel 20',size=(10,2))]
         ]
-    order = sg.Window('Order',layout, keep_on_top=True, size=(GetSystemMetrics(0), GetSystemMetrics(1)),element_justification='c')  # begin with a blank form
+    order = sg.Window('Order',layout, keep_on_top=True, size=(gsys(0), gsys(1)),element_justification='c')  # begin with a blank form
     while True:
         event, values = order.Read()
         print(event, values)
@@ -474,11 +470,11 @@ def order_history(history):
         return cus_dets
     else :
         sg.change_look_and_feel(th)
-        his=sg.Window('Order History', keep_on_top=True, size=(GetSystemMetrics(0), GetSystemMetrics(1)),element_justification='c')
+        his=sg.Window('Order History', keep_on_top=True, size=(gsys(0), gsys(1)),element_justification='c')
         layout=[
             [sg.Frame(layout=[
                 [sg.Button("< Back",size=(10,2),font="Ariel 12")],
-                [sg.Text(f"{history}",font='Ariel 12',size=(60,30))]
+                [sg.Text("",size=(3,3)),sg.Text(f"{history[0:200]}",font='Ariel 12',size=(30,30)),sg.Text(f"{history[200:]}",font='Ariel 12',size=(30,30))]
                 ],title='Order History')
             ]
         ]

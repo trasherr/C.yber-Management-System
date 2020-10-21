@@ -1,6 +1,7 @@
 # server
 import socket
 import server_func as sf
+import PySimpleGUI as sg
 import threading
 import time
 
@@ -18,10 +19,6 @@ s.listen(5)         # listening for connections
 print("listening...")
 
 #######################################################################
-
-#c, addr = s.accept()  # Establish connection with client.
-#print('Got connection from', addr)
-#c.send("Thank you for connecting".encode())
 
 def recieve():
     while True:
@@ -57,18 +54,18 @@ def server(c):
                     if (log_choice == 'Order'):
                         drinks, d_cost, food, f_cost = sf.order()
 
-                        time.sleep(0.2)
+                        time.sleep(0.5)
                         c.send(str(drinks).encode())
-                        time.sleep(0.3)
+                        time.sleep(0.5)
                         print('drinks', drinks)
                         c.send(str(food).encode())
-                        time.sleep(0.4)
+                        time.sleep(0.5)
                         print('food', food)
                         c.send(str(d_cost).encode())
-                        time.sleep(0.4)
+                        time.sleep(0.5)
                         print('d_cost', d_cost)
                         c.send(str(f_cost).encode())
-                        time.sleep(0.4)
+                        time.sleep(0.5)
                         print('f_cost', f_cost)
 
                         cus_dets=c.recv(1024).decode()
@@ -121,8 +118,8 @@ def server(c):
                         sf.feedback(feed)
                         continue
 
-                    elif (log_choice == 'Loggout'):
-                        out=c.recv(128).decode()
+                    elif (log_choice == 'Loggout' or log_choice==sg.WIN_CLOSED):
+                        out=bool(c.recv(128).decode())
                         print("logg out = ",out)
                         if out == True:
                             print("Logging out")
@@ -144,16 +141,18 @@ def server(c):
                     if check=="true":
                         print("Creating acc")
                         crd=c.recv(1024).decode()
+                        print (crd)
                         if (crd != "return code 913372"):
                             new_acc=sf.new_acc(crd)
                             c.send(new_acc.encode())
+                            break
                     else :
                         continue
                 else:
                     break
         ##############################################################
 
-        elif menu == 'Exit' or menu == 'None':
+        elif menu == 'Exit' or menu == sg.WIN_CLOSED:
             ext=bool(c.recv(32).decode())
             print("Exit = ")
             if (ext=='Cancel'):

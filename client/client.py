@@ -75,6 +75,7 @@ while True :
         else :
 
             log_crd=dets
+            print(dets)
 
             while True :
 
@@ -165,17 +166,16 @@ while True :
                         sg.popup("Feedback sent !\nThank you for your thoughts.",keep_on_top=True)
                     continue
 
-                elif (log_choice=='Loggout'):
+                elif (log_choice=='Loggout' or log_choice==sg.WIN_CLOSED):
 
                     ext = cf.loggout()
                     s.send(str(ext).encode())
 
                     if (ext == True):
-                        cont = True
                         break
                     else:
                         continue
-            cont = True
+
     #########################################################
 
     ###################### Create account ########################
@@ -187,10 +187,11 @@ while True :
             print(usr)
             s.send(str(usr).encode())
             if usr!="cancel code 913372":
-                check=s.recv(16).decode()
+                check=s.recv(8).decode()
                 if check == "true" :
                     details=cf.create_acc(usr)
                     s.send(str(details).encode())
+                    time.sleep(0.1)
                     if (details != "return code 913372"):
                         new_acc=bool(False)
                         new_acc=bool(s.recv(1024).decode)
@@ -210,7 +211,7 @@ while True :
     ####################################################
 
     ###################### Exit ########################
-    elif menu=='Exit' or menu=='None':
+    elif menu=='Exit' or menu==sg.WIN_CLOSED:
         ext=cf.exiting()
         print ("ext=",ext)
         if (ext=='Cancel'):
