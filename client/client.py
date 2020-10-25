@@ -2,7 +2,6 @@
 import socket
 import client_func as cf
 import PySimpleGUI as sg
-from win32api import GetSystemMetrics
 import time
 
 ###################################theme browser################################

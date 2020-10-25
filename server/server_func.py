@@ -133,6 +133,30 @@ def feedback(feed):
         file.write("\n")
         file.write(feed)
 
+def s_orders():
+    his=""
+    temp=""
+    flag=False
+    with open ("orders.dat","r") as file:
+        data=file.readlines()
+        for line in data:
+            line_read=str(line)
+
+            if "Username" in line_read:
+                flag=True
+
+            if "Total" in line_read :
+                flag=False
+
+            if flag==True and len(line_read)!=0:
+                temp = f"{temp}\n" + line_read
+
+            if flag == False and len(line_read)!=0:
+                his=temp+"\n"+his
+
+    print (his)
+    return his
+
 def order_history(cus_dets):
     flag=False
     his=''

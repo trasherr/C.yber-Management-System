@@ -4,6 +4,7 @@ import server_func as sf
 import PySimpleGUI as sg
 import threading
 import time
+from win32api import GetSystemMetrics as gsys
 
 c=[]
 ######################### Connection #################################
@@ -25,9 +26,40 @@ def recieve():
         connection, addr = s.accept()  # Establish connection with client.
         print('Got connection from', addr)
         connection.send("Thank you for connecting".encode())
-        #c.append(connection)
         thread=threading.Thread(target=server,args=(connection,))
         thread.start()
+
+def serverGUI():
+
+    sg.theme("DarkBlack")
+    layout=[
+        [sg.Text("Welcome to Cafe Management System",font="Ariel 32")],
+        [sg.Frame(layout=[
+            [sg.Text("",size=(2,2))],
+            [sg.Text("",size=(2,2)),sg.Multiline(key="orders",size=(30,30)),sg.Text("",size=(2,2))],
+            [sg.Text("",size=(2,2))]
+        ],title="Orders"
+        ),
+        sg.Frame(layout=[
+            [sg.Text("")],
+            [sg.Text("",size=(10,2)),sg.Button("Add Item",size=(10,2),font="Ariel 12"),sg.Text("",size=(10,2))],
+            [sg.Text("",size=(10,2)),sg.Button("Exit",size=(10,2),font="Ariel 12"),sg.Text("",size=(10,2))],
+            [sg.Text("")]
+        ], title="Options"
+        )]
+    ]
+    window=sg.Window('Server',layout, size=(gsys(0), gsys(1)),element_justification='c')
+    while True:
+        ord = sf.s_orders()
+        event,values=window.Read()
+        #print(ord)
+        window["orders"].update(ord)
+        if(event=="Exit" or event == sg.WIN_CLOSED):
+            if (sg.popup_ok_cancel("Are you sure you want to exit ? ", keep_on_top=True)=="OK"):
+                break
+    window.Close()
+    exit(1)
+
 
 def server(c):
     while True :
@@ -172,4 +204,5 @@ def server(c):
             c.close() # Close
             break
 
-recieve()
+threading.Thread(target=serverGUI()).start()
+threading.Thread(target=recieve()).start()
