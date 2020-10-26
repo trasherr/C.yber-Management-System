@@ -479,7 +479,7 @@ def order_history(history):
             [sg.Frame(layout=[
                 [sg.Text("")],
                 [sg.Text("",size=(28,3)),sg.Button("< Back",size=(10,2),font="Ariel 12")],
-                [sg.Text("",size=(3,3)),sg.Multiline(f"{history[:last]}",size=(60,30)),sg.Text("",size=(3,3))],
+                [sg.Text("",size=(3,3)),sg.Output(f"{history[:last]}",size=(60,30)),sg.Text("",size=(3,3))],
                 [sg.Text("")]
                 ],title='Order History')
             ]

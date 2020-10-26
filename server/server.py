@@ -4,9 +4,11 @@ import server_func as sf
 import PySimpleGUI as sg
 import threading
 import time
+import sys
 from win32api import GetSystemMetrics as gsys
 
 c=[]
+ext=False
 ######################### Connection #################################
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -22,17 +24,27 @@ print("listening...")
 #######################################################################
 
 def recieve():
+    global c,ext
+    th = threading.Thread(target=serverGUI)
+    th.start()
     while True:
+        if (ext == True):
+            thread.join()
+            break
         connection, addr = s.accept()  # Establish connection with client.
         print('Got connection from', addr)
         connection.send("Thank you for connecting".encode())
         thread=threading.Thread(target=server,args=(connection,))
         thread.start()
+        c.append(str(addr))
+
 
 def serverGUI():
-
+    global c,ext
     sg.theme("DarkBlack")
     layout=[
+        [sg.Text("")],
+        [sg.Text("")],
         [sg.Text("Welcome to Cafe Management System",font="Ariel 32")],
         [sg.Frame(layout=[
             [sg.Text("",size=(2,2))],
@@ -41,24 +53,40 @@ def serverGUI():
         ],title="Orders"
         ),
         sg.Frame(layout=[
+            [sg.Text("", size=(2, 2))],
+            [sg.Text("", size=(2, 2)), sg.Multiline(key="-con-", size=(30, 30)), sg.Text("", size=(2, 2))],
+            [sg.Text("", size=(2, 2))]
+        ], title="Connections"
+            ),
+        sg.Frame(layout=[
             [sg.Text("")],
             [sg.Text("",size=(10,2)),sg.Button("Add Item",size=(10,2),font="Ariel 12"),sg.Text("",size=(10,2))],
+            [sg.Text("")],
+            [sg.Text("", size=(10, 2)), sg.Button("Edit Item", size=(10, 2), font="Ariel 12"),
+             sg.Text("", size=(10, 2))],
+            [sg.Text("")],
+            [sg.Text("", size=(10, 2)), sg.Button("Remove Item", size=(10, 2), font="Ariel 12"),
+             sg.Text("", size=(10, 2))],
+            [sg.Text("")],
             [sg.Text("",size=(10,2)),sg.Button("Exit",size=(10,2),font="Ariel 12"),sg.Text("",size=(10,2))],
             [sg.Text("")]
         ], title="Options"
         )]
     ]
-    window=sg.Window('Server',layout, size=(gsys(0), gsys(1)),element_justification='c')
+    window=sg.Window('Server',layout, size=(gsys(0), gsys(1)),element_justification='c',finalize=True)
     while True:
         ord = sf.s_orders()
-        event,values=window.Read()
-        #print(ord)
+        addr=sf.add(c)
         window["orders"].update(ord)
-        if(event=="Exit" or event == sg.WIN_CLOSED):
-            if (sg.popup_ok_cancel("Are you sure you want to exit ? ", keep_on_top=True)=="OK"):
+        window["-con-"].update(addr)
+
+        event, values = window.Read(timeout=5)
+        if (event == "Exit" or event == sg.WIN_CLOSED):
+            if (sg.popup_ok_cancel("Are you sure you want to exit ? ", keep_on_top=True) == "OK"):
                 break
+
     window.Close()
-    exit(1)
+    ext=True
 
 
 def server(c):
@@ -204,5 +232,4 @@ def server(c):
             c.close() # Close
             break
 
-threading.Thread(target=serverGUI()).start()
-threading.Thread(target=recieve()).start()
+recieve()
