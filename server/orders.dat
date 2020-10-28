@@ -5,7 +5,7 @@ Name :: FirstName LastName
 Pepsi 50 
 Sprite 50 
 Soup 25
-Total :: 120
+Total :: 125
 
 Username :: Username
 Name :: FirstName LastName
@@ -14,7 +14,7 @@ Coca Cola 50
 Sprite 50 
 Burger 35
 Soup 25
-Total :: 190
+Total :: 160
 
 Username :: thisistest
 Name :: First name Last name
@@ -23,4 +23,18 @@ Masala Tea 20
 Pepsi 50 
 Momos 30
 Spring Roll 30
-Total :: 140
+Total :: 130
+
+Username :: Username
+Name :: FirstName LastName
+05:22:26 / 2020-10-27
+Sprite 50 
+Soup 25
+Total :: 75
+
+Username :: Username
+Name :: FirstName LastName
+05:40:46 / 2020-10-27
+Sprite 50 
+Soup 25
+Total :: 75

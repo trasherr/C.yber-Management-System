@@ -1,10 +1,19 @@
 # server functions
 import datetime as dt
 
-drinks=['Coffee','Masala Tea','Green Tea','Coca Cola','Pepsi','Sprite']
-d_cost=['50','20','40','50','50','50']
-food=['Momos','Spring Roll','Burger','Soup']
-f_cost=['30','30','35','25']
+drinks=[]
+d_cost=[]
+food=[]
+f_cost=[]
+
+def order_menu():
+    global drinks,food,d_cost,f_cost
+    with open ("menu.dat","r") as file:
+        data=file.readlines()
+        drinks = eval(data[0])
+        d_cost = eval(data[1])
+        food = eval(data[2])
+        f_cost = eval(data[3])
 
 def order():
     return drinks,d_cost,food,f_cost
@@ -23,7 +32,7 @@ def ordering(cus_dets,ordered):
         for k in range(0, len(food)):
             if (ordered[i]==food[k]):
                 orders=orders+f"\n{food[k]} {f_cost[k]}"
-                total = total + int(d_cost[k])
+                total = total + int(f_cost[k])
 
     orders = orders + f"\nTotal :: {total}"
     with open("orders.dat","a+") as file:
@@ -188,3 +197,38 @@ def add(addr):
     for i in range (0,len(addr)):
         add_str=addr[i]+"\n"+add_str
     return add_str
+
+def add_items(o,n,c):
+    global drinks, food, d_cost, f_cost
+    if o=="New Food Item" and len(food) < 10:
+        food.append(n)
+        f_cost.append(c)
+        flag=1
+    elif o=="New drinks" and len(drinks) < 10:
+        drinks.append(n)
+        d_cost.append(c)
+        flag = 1
+
+    if flag==1:
+        temp=str(drinks)+"\n"+str(d_cost)+"\n"+str(food)+"\n"+str(f_cost)
+        fout = open("menu.dat","wt")
+        fout.write(temp)
+        fout.close()
+
+def rm_items(item):
+
+    global drinks,food,d_cost,f_cost
+    for i in range (0,len(drinks)):
+        if item==drinks[i]:
+            drinks.remove(drinks[i])
+            d_cost.remove(d_cost[i])
+
+    for i in range (0,len(food)):
+        if item==food[i]:
+            food.remove(food[i])
+            f_cost.remove(f_cost[i])
+
+    temp=str(drinks)+"\n"+str(d_cost)+"\n"+str(food)+"\n"+str(f_cost)
+    fout = open("menu.dat","wt")
+    fout.write(temp)
+    fout.close()

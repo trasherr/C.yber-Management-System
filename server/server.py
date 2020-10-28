@@ -7,8 +7,11 @@ import time
 import sys
 from win32api import GetSystemMetrics as gsys
 
-c=[]
-ext=False
+######################## Global Variables ############################
+
+ad=[]
+qt=False
+
 ######################### Connection #################################
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -24,74 +27,145 @@ print("listening...")
 #######################################################################
 
 def recieve():
-    global c,ext
+    global c,qt,thread
     th = threading.Thread(target=serverGUI)
     th.start()
-    while True:
-        if (ext == True):
-            thread.join()
-            break
+    while qt==False:
         connection, addr = s.accept()  # Establish connection with client.
         print('Got connection from', addr)
         connection.send("Thank you for connecting".encode())
         thread=threading.Thread(target=server,args=(connection,))
         thread.start()
-        c.append(str(addr))
+        ad.append(str(addr))
 
 
 def serverGUI():
-    global c,ext
+    global ad,qt
+    sf.order_menu()
     sg.theme("DarkBlack")
     layout=[
         [sg.Text("")],
         [sg.Text("")],
         [sg.Text("Welcome to Cafe Management System",font="Ariel 32")],
+        [sg.Text("")],
         [sg.Frame(layout=[
             [sg.Text("",size=(2,2))],
             [sg.Text("",size=(2,2)),sg.Multiline(key="orders",size=(30,30)),sg.Text("",size=(2,2))],
             [sg.Text("",size=(2,2))]
         ],title="Orders"
-        ),
+        ),sg.Text("",size=(1,1)),
         sg.Frame(layout=[
             [sg.Text("", size=(2, 2))],
             [sg.Text("", size=(2, 2)), sg.Multiline(key="-con-", size=(30, 30)), sg.Text("", size=(2, 2))],
             [sg.Text("", size=(2, 2))]
         ], title="Connections"
-            ),
+            ),sg.Text("",size=(1,1)),
         sg.Frame(layout=[
+            [sg.Text("",size=(2,4))],
+            [sg.Text("",size=(5,2)),sg.Button("Add Food Item",size=(20,2),font="Ariel 16"),sg.Text("",size=(5,2))],
             [sg.Text("")],
-            [sg.Text("",size=(10,2)),sg.Button("Add Item",size=(10,2),font="Ariel 12"),sg.Text("",size=(10,2))],
             [sg.Text("")],
-            [sg.Text("", size=(10, 2)), sg.Button("Edit Item", size=(10, 2), font="Ariel 12"),
-             sg.Text("", size=(10, 2))],
+            [sg.Text("", size=(5, 2)), sg.Button("Add Drink", size=(20, 2), font="Ariel 16"),
+             sg.Text("", size=(5, 2))],
             [sg.Text("")],
-            [sg.Text("", size=(10, 2)), sg.Button("Remove Item", size=(10, 2), font="Ariel 12"),
-             sg.Text("", size=(10, 2))],
             [sg.Text("")],
-            [sg.Text("",size=(10,2)),sg.Button("Exit",size=(10,2),font="Ariel 12"),sg.Text("",size=(10,2))],
-            [sg.Text("")]
+            [sg.Text("", size=(5, 2)), sg.Button("Remove Item", size=(20, 2), font="Ariel 16"),
+             sg.Text("", size=(5, 2))],
+            [sg.Text("")],
+            [sg.Text("")],
+            [sg.Text("",size=(5,2)),sg.Button("Exit",size=(20,2),font="Ariel 16"),sg.Text("",size=(5,2))],
+            [sg.Text("",size=(2,4))],
         ], title="Options"
         )]
     ]
     window=sg.Window('Server',layout, size=(gsys(0), gsys(1)),element_justification='c',finalize=True)
     while True:
         ord = sf.s_orders()
-        addr=sf.add(c)
+        addr=sf.add(ad)
         window["orders"].update(ord)
         window["-con-"].update(addr)
 
         event, values = window.Read(timeout=5)
+
+        if  event == "Remove Item":
+
+            drinks,d_cost,food,f_cost=sf.order()
+            rm = sg.Window('Remove Item', keep_on_top=True, size=(int(gsys(0) / 1.8), int(gsys(1) / 1.5)), element_justification='c')
+            layout=[
+                [sg.Text("")],
+                [sg.Text("Remove Item",font="Ariel 20")],
+                [sg.Text("")],
+                [sg.Frame(layout=[
+                *[[sg.Text("",size=(2,1)),sg.Button(f"{drinks[i]}",font='Ariel 16',size=(15,1)),sg.Text("",size=(2,1))]for i in range (0,len(drinks))],
+                *[[sg.Text("", font='Ariel 16',size=(2,1)), ] for i in range(0, 10 - len(drinks))]
+                ],title="Drinks"),
+                    sg.Frame(layout=[
+                        *[[sg.Text("",size=(2,1)),sg.Button(f"{food[i]}", font='Ariel 16',size=(15,1)),sg.Text("",size=(2,1))] for i in range(0, len(food))],
+                        *[[sg.Text("", font='Ariel 16',size=(2,1)),] for i in range(0, 10 - len(food))]
+                    ], title="Food")
+                    ],
+                [sg.Text("")],
+                [sg.Cancel(font="Ariel 20",size=(15,2))],
+                [sg.Text("")],
+            ]
+            while True:
+                button, val = rm.Layout(layout).Read()
+                if button != sg.WIN_CLOSED and button !="Cancel" :
+                    if(sg.popup_ok_cancel("Are you sure you want to remove this item ! ",keep_on_top=True)=="OK"):
+                        sf.rm_items(button)
+                        sg.popup_ok("Item Removed ! ", keep_on_top=True)
+                else:
+                    break
+            rm.Close()
+
+        if event == "Add Drink":
+            drinks = sg.Window('New Drinks', keep_on_top=True, size=(int(gsys(0) / 2), int(gsys(1) / 2)),
+                             element_justification='c')
+            layout = [
+                [sg.Text("")],
+                [sg.Text("New Drink",size=(16,3),font="Ariel 16")],
+                [sg.Text("")],
+                [sg.Text("Name", size=(10, 2), font="Ariel 16"), sg.InputText("Item Name", font="Ariel 16")],
+                [sg.Text("")],
+                [sg.Text("Cost", size=(10, 2), font="Ariel 16"), sg.InputText("50", font="Ariel 16")],
+                [sg.Text("")],
+                [sg.Submit(font="Ariel 20", size=(8, 2)), sg.Cancel(font="Ariel 20", size=(8, 2))]
+            ]
+            button, val = drinks.Layout(layout).Read()
+            if button == "Submit":
+                sf.add_items("New drinks", val[0], val[1])
+            drinks.Close()
+
+        if  event == "Add Food Item":
+            food = sg.Window('New Food Item', keep_on_top=True, size=(int(gsys(0) / 2), int(gsys(1) / 2)), element_justification='c')
+            layout=[
+                [sg.Text("")],
+                [sg.Text("New Food Item",size=(16,3),font="Ariel 16")],
+                [sg.Text("")],
+                [sg.Text("Name",size=(10,2),font="Ariel 16"),sg.InputText("Item Name",font="Ariel 16")],
+                [sg.Text("")],
+                [sg.Text("Cost", size=(10, 2), font="Ariel 16"), sg.InputText("00", font="Ariel 16")],
+                [sg.Text("")],
+                [sg.Submit(font="Ariel 20",size=(8,2)),sg.Cancel(font="Ariel 20",size=(8,2))]
+            ]
+            button, val = food.Layout(layout).Read()
+            if button == "Submit":
+                sf.add_items("New Food Item",val[0],val[1])
+            food.Close()
+
         if (event == "Exit" or event == sg.WIN_CLOSED):
             if (sg.popup_ok_cancel("Are you sure you want to exit ? ", keep_on_top=True) == "OK"):
                 break
 
     window.Close()
-    ext=True
+    qt=True
+
+    sys.exit(1)
 
 
 def server(c):
-    while True :
-
+    global qt
+    while qt==False :
 
         ########################### Menu ##############################
         print ("menu")

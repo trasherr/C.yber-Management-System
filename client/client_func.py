@@ -400,7 +400,7 @@ def order(drinks,d_cost,food,f_cost):
                        ]
                 ,title='Drinks'),
             sg.Frame(layout=[
-                    *[[sg.Checkbox(f'{food[i]}',font='Ariel 16',size=(15,2)),sg.Text(f'{d_cost[i]}',font='Ariel 16',size=(5,2))] for i in range (0,len(food))],
+                    *[[sg.Checkbox(f'{food[i]}',font='Ariel 16',size=(15,2)),sg.Text(f'{f_cost[i]}',font='Ariel 16',size=(5,2))] for i in range (0,len(food))],
                     * [[sg.Text("",font='Ariel 16',size=(15,2)), ] for i in range(0, 10 - len(food))]
                      ]
                 ,title='Food'),
@@ -439,8 +439,8 @@ def order(drinks,d_cost,food,f_cost):
         for j in range (0,len(food)):
             if(values[i+j+1] == True):
                 ordered.append(food[j])
-                o_cost.append(d_cost[j])
-                total = total + int(d_cost[j])
+                o_cost.append(f_cost[j])
+                total = total + int(f_cost[j])
         if event=='Order':
             if len(ordered)==0:
                 sg.popup("Nothing is selected !",keep_on_top=True)
@@ -479,7 +479,7 @@ def order_history(history):
             [sg.Frame(layout=[
                 [sg.Text("")],
                 [sg.Text("",size=(28,3)),sg.Button("< Back",size=(10,2),font="Ariel 12")],
-                [sg.Text("",size=(3,3)),sg.Output(f"{history[:last]}",size=(60,30)),sg.Text("",size=(3,3))],
+                [sg.Text("",size=(3,3)),sg.Multiline(f"{history[:last]}",size=(60,30)),sg.Text("",size=(3,3))],
                 [sg.Text("")]
                 ],title='Order History')
             ]
