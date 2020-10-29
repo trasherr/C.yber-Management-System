@@ -48,7 +48,6 @@ def authenticate(auth):
         data = file.readlines()
         for line in data:
             det=str(line)
-            print (det)
 
             # checking data in each line
 
@@ -71,7 +70,6 @@ def check(usr):
         data = file.readlines()
         for line in data:
             det = str(line)
-            print(det)
 
             # checking data in each line
 
@@ -91,7 +89,6 @@ def check(usr):
 
 
 def new_acc(crd):
-    print(crd)
     with open("usr.dat","a+") as file:
         file.seek(0)
         file.write("\n")
@@ -173,7 +170,6 @@ def order_history(cus_dets):
         data = file.readlines()
         for line in data:
             det=str(line)
-            print (det)
 
             if cus_dets in det :
                 flag = True
@@ -232,3 +228,7 @@ def rm_items(item):
     fout = open("menu.dat","wt")
     fout.write(temp)
     fout.close()
+def read_feedback():
+    with open ("feedback.dat","r") as file:
+        feed=file.read()
+        return feed

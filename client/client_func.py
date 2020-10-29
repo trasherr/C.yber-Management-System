@@ -1,5 +1,5 @@
 # client functions
-import msvcrt
+import datetime as dt
 import PySimpleGUI as sg
 from win32api import GetSystemMetrics as gsys
 
@@ -32,7 +32,6 @@ def menu():
         ]
     button ,values  = menu.Layout(layout).Read()
     b1=button
-    print (b1)
     menu.Close()
     return b1
 
@@ -58,7 +57,6 @@ def login():
     form.Close()
 
     comstr = us+'::'+pas+'::'
-    print(comstr)
     return comstr
 
 def usercheck():
@@ -141,23 +139,8 @@ def create_acc(usr):
         else :
             sg.popup_ok("Username should have atleast 4 characters !\nFirst name should have atleast 3 characters !\nLast name should have atleast 3 characters !\nPhone number must be of 10 digits !\nEmail should not have more than 50 characters !\nPassword should have atleast 8 characters !",keep_on_top=True)
 
-def exiting():
-    sg.change_look_and_feel(th)
-    exit_f = sg.FlexForm('Exit!')  # begin with a blank form
-
-    layout = [
-        [sg.Text('Are you sure you want to exit ? \n')],
-        [sg.Button("Yes"),sg.Button("Cancel")]
-    ]
-    button, values = exit_f.Layout(layout).Read()
-    ans=button
-    exit_f.Close()
-    return ans
-
-
 def crdfinder(log_crd):
     temp=log_crd
-    print(log_crd)
 
     for j in range (0,5):
         for i in range(0,len(temp)):
@@ -212,13 +195,10 @@ def edit():
         lname = values[1]
         email = values[2]
         phone_no=values[3]
-        print(fname,lname,email,phone_no)
-
 
         if len(fname)>=3 and len(lname)>=3  and len(phone_no)==10 and len(email)<50:
 
             details = crdent.uname + '::' + crdent.passwd + '::' + fname + '::' + lname + '::' + email + '::' + phone_no
-            print(f" {crdent.fname} || {crdent.lname} || {crdent.email} || {crdent.phone} ")
             sg.popup_ok("Details Changed !",keep_on_top=True)
             form.Close()
             return details
@@ -303,16 +283,10 @@ def chng_passwd(log_crd):
 
     if (new_passwd==confirm_passwd) :
         crdent.passwd = new_passwd
-        print(new_passwd)
-        print(crdent.passwd)
-        print(crdent.uname + '::' + new_passwd + '::')
         return crdent.uname + '::' + new_passwd + '::'
 
 
     else:
-        print("         Passwords didn't match !\n")
-        print("\n         Press any key to continue !")
-        msvcrt.getch()
         return chng_passwd(log_crd)
 
 def feedback():
@@ -332,28 +306,11 @@ def feedback():
 
     if (Button=='Send'):
         fed_bck=crdent.uname+'::\n'+values[0]+'\n'
+    else:
+        fed_bck="return code 913372"
 
     feed.Close()
-    print(fed_bck)
     return fed_bck
-
-
-def loggout():
-    sg.change_look_and_feel(th)
-    exit_f = sg.FlexForm('logout !')  # begin with a blank form
-
-    layout = [
-        [sg.Text('Are you sure you want to Logout ? \n')],
-        [sg.Button("Yes"), sg.Button("Cancel")]
-    ]
-    button, values = exit_f.Layout(layout).Read()
-    ans = button
-    exit_f.Close()
-    if (ans == 'Yes'):
-        return True
-    else:
-        return False
-
 
 def loggedin(log_crd):
     crdfinder(log_crd)
@@ -366,12 +323,9 @@ def loggedin(log_crd):
         [sg.Text(f'Welcome {crdent.fname} {crdent.lname} ',size=(40,2), font="Ariel 32")],
         [sg.Text('')],
         [sg.Button("Order",size=(20,3), font="Ariel 32"),sg.Button("Order History",size=(20,3), font="Ariel 32")],
-        #[sg.Text('')],
         [sg.Button("View Details",size=(20,3), font="Ariel 32"),sg.Button("Edit Details",size=(20,3), font="Ariel 32")],
-        #[sg.Text('')],
         [sg.Button("Change Password",size=(20,3), font="Ariel 32"),sg.Button("Feedback",size=(20,3), font="Ariel 32")],
-        #[sg.Text('')],
-        [sg.Button("Loggout", font="Ariel 32")]
+        [sg.Button("Logout", font="Ariel 32")]
     ]
     button,values = options.Layout(layout).Read()
 
@@ -385,8 +339,6 @@ def order(drinks,d_cost,food,f_cost):
     food=eval(food)
     d_cost=eval(d_cost)
     f_cost=eval(f_cost)
-    print(food)
-
 
     sg.change_look_and_feel(th)
     layout = [
@@ -418,7 +370,6 @@ def order(drinks,d_cost,food,f_cost):
     order = sg.Window('Order',layout, keep_on_top=True, size=(gsys(0), gsys(1)),element_justification='c')  # begin with a blank form
     while True:
         event, values = order.Read()
-        print(event, values)
         total = 0
         ordered=[]
         o_cost=[]
@@ -434,7 +385,6 @@ def order(drinks,d_cost,food,f_cost):
                 total=total+int(d_cost[i])
                 ordered.append(drinks[i])
                 o_cost.append(d_cost[i])
-                print(d_cost[i])
 
         for j in range (0,len(food)):
             if(values[i+j+1] == True):
@@ -446,21 +396,30 @@ def order(drinks,d_cost,food,f_cost):
                 sg.popup("Nothing is selected !",keep_on_top=True)
             else :
                 if sg.popup_ok_cancel("Press 'OK' to confirm order !",keep_on_top=True) == 'OK':
-                    order.Close()
+
                     cus_dets = "Username :: " + crdent.uname +"\nName :: "+crdent.fname+" " +crdent.lname
+
+                    if (sg.popup_ok_cancel("Do you want to print the receipt",keep_on_top=True) == "OK"):
+                        rec=" -- Order Receipt --\n "
+                        for i in range(0, len(ordered)):
+                            rec = rec + f" {ordered[i]} ({o_cost[i]}) \n"
+                        rec=rec+f" ___________________\n Total :: {total}\n"
+                        rname=f"{crdent.uname}_{dt.datetime.now().strftime('%H-%M-%S_%Y-%m-%d')}.dat"
+                        file= open (f"receipts/{rname}","wt")
+                        file.write(rec)
+                        file.close()
+                        sg.popup_ok(f"Receipt saved in 'receipts' directory with name :\n{rname}", keep_on_top=True)
+
                     order.Close()
                     return cus_dets,ordered
 
-        print('total',total)
-        print('ordered',ordered)
         for i in range (0,len(ordered)):
             items=items+f"{ordered[i]}\n"
             costs=costs+f"{o_cost[i]}\n"
         order['-OUTPUT-'].update(total)
         order['-items-'].update(items)
         order['-costs-'].update(costs)
-        print('items', items)
-        print('costs', costs)
+
     order.Close()
 
 def order_history(history):
