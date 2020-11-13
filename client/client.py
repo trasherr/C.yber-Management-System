@@ -31,211 +31,214 @@ window.close()
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)    # Creating socket object
 host = "127.0.0.1" # localhost
-port = 8080        # Reserved port
+port = 8014       # Reserved port
 
 #################################################################################
 
 ###################### Connection ###################################
+try :
+    s.connect((host, port))
+    r = s.recv(1024).decode()
 
-s.connect((host, port))
-r = s.recv(1024).decode()
-
-##################################################################
+    ##################################################################
 
 
-while True :
-    cont=bool(True)
-    log_crd=''
-    ###################### Menu begin ########################
+    while True :
+        cont=bool(True)
+        log_crd=''
+        ###################### Menu begin ########################
 
-    menu=cf.menu()
+        menu=cf.menu()
 
-    s.send(str(menu).encode("utf-8"))
+        s.send(str(menu).encode("utf-8"))
 
-    ###################### login ########################
+        ###################### login ########################
 
-    if menu=='Login':
+        if menu=='Login':
 
-        credentials=cf.login()
+            credentials=cf.login()
 
-        time.sleep(0.2)
-        s.send(str(credentials).encode())
+            time.sleep(0.2)
+            s.send(str(credentials).encode())
 
-        dets=str(s.recv(1024).decode())
+            dets=str(s.recv(1024).decode())
 
-        if dets=="Incorrect Username or Password" :
-            sg.change_look_and_feel(theme)
-            sg.popup('Wrong Username or Password !',keep_on_top=True)
+            if dets=="Incorrect Username or Password" :
+                sg.change_look_and_feel(theme)
+                sg.popup('Wrong Username or Password !',keep_on_top=True)
 
-            cont=True
+                cont=True
 
-        else :
-            log_crd=dets
+            else :
+                log_crd=dets
 
-            while True :
+                while True :
 
-                log_choice = cf.loggedin(log_crd)
-                s.send(str(log_choice).encode())
+                    log_choice = cf.loggedin(log_crd)
+                    s.send(str(log_choice).encode())
 
-                if(log_choice=='Order'):
-
-                    while True:
-                        sg.one_line_progress_meter('Loading ...', 100, 1000, 'key', 'loading...')
-                        drinks=s.recv(1024).decode()
-                        sg.one_line_progress_meter('Loading ...', 250, 1000, 'key', 'loading...')
-
-                        food=s.recv(1024).decode()
-                        sg.one_line_progress_meter('Loading ...', 500, 1000, 'key', 'loading...')
-
-                        d_cost = s.recv(1024).decode()
-                        sg.one_line_progress_meter('Loading ...', 800, 1000, 'key', 'loading...')
-
-                        f_cost = s.recv(1024).decode()
-                        sg.one_line_progress_meter('Loading ...', 1000, 1000, 'key', 'loading...')
-                        break
-                    window.Close()
-
-                    cus_dets,ordered = cf.order(drinks,d_cost,food,f_cost)
-                    s.send(cus_dets.encode())
-                    time.sleep(0.2)
-                    s.send(str(ordered).encode())
-
-                    continue
-
-                elif (log_choice == 'Order History'):
-                    cus_dets=cf.order_history("flag")
-                    s.send(str(cus_dets).encode())
-                    history=s.recv(2048).decode()
-                    cf.order_history(history)
-                    continue
-
-                elif (log_choice=='View Details'):
-                    s.send(str(credentials).encode())
-                    log_crd=s.recv(1024).decode()
-                    cf.view(log_crd)
-                    continue
-
-                elif (log_choice=='Edit Details'):
-                    edit_det=cf.edit()
-                    s.send(str(edit_det).encode())
-                    log_crd = edit_det
-                    continue
-
-                elif (log_choice == 'Change Password'):
+                    if(log_choice=='Order'):
 
                         while True:
-                            curr_passwd=cf.curr_passwd()
-                            if curr_passwd=='error code 913372':
-                                s.send(curr_passwd.encode())
-                                break
+                            sg.one_line_progress_meter('Loading ...', 100, 1000, 'key', 'loading...')
+                            drinks=s.recv(1024).decode()
+                            sg.one_line_progress_meter('Loading ...', 250, 1000, 'key', 'loading...')
 
-                            s.send(curr_passwd.encode())
-                            passwd_match=(s.recv(16).decode())
+                            food=s.recv(1024).decode()
+                            sg.one_line_progress_meter('Loading ...', 500, 1000, 'key', 'loading...')
 
-                            if(passwd_match=='True'):
-                                new_pass=cf.chng_passwd(log_crd)
-                                log_crd=cf.log_crd()
-                                credentials=new_pass
-                                s.send(new_pass.encode())
-                                sg.popup("Password Changed !",keep_on_top=True)
-                            else:
-                                sg.popup("Wrong Password !", keep_on_top=True)
-                                continue
+                            d_cost = s.recv(1024).decode()
+                            sg.one_line_progress_meter('Loading ...', 800, 1000, 'key', 'loading...')
 
+                            f_cost = s.recv(1024).decode()
+                            sg.one_line_progress_meter('Loading ...', 1000, 1000, 'key', 'loading...')
                             break
+                        window.Close()
 
-                elif (log_choice == 'Feedback'):
-                    feed=cf.feedback()
-                    s.send(str(feed).encode())
-                    if (feed!='return code 913372'):
-                        sg.popup("Feedback sent !\nThank you for your thoughts.",keep_on_top=True)
-                    continue
+                        cus_dets,ordered = cf.order(drinks,d_cost,food,f_cost)
+                        s.send(cus_dets.encode())
+                        time.sleep(0.2)
+                        s.send(str(ordered).encode())
 
-                elif (log_choice=='Logout' or log_choice==sg.WIN_CLOSED):
-
-                    sg.change_look_and_feel(theme)
-                    exit_f = sg.FlexForm('logout !')  # begin with a blank form
-
-                    layout = [
-                        [sg.Text('Are you sure you want to Logout ? \n')],
-                        [sg.Button("Logout"), sg.Button("Cancel")]
-                    ]
-                    button, values = exit_f.Layout(layout).Read()
-                    if (button == "Logout"):
-                        ext = True
-                    else:
-                        ext = False
-                    exit_f.Close()
-
-                    s.send(str(ext).encode())
-
-                    if (ext == True):
-                        break
-                    else:
                         continue
 
-    #########################################################
+                    elif (log_choice == 'Order History'):
+                        cus_dets=cf.order_history("flag")
+                        s.send(str(cus_dets).encode())
+                        history=s.recv(2048).decode()
+                        cf.order_history(history)
+                        continue
 
-    ###################### Create account ########################
+                    elif (log_choice=='View Details'):
+                        s.send(str(credentials).encode())
+                        log_crd=s.recv(1024).decode()
+                        cf.view(log_crd)
+                        continue
 
-    elif menu=='Create Account':
+                    elif (log_choice=='Edit Details'):
+                        edit_det=cf.edit()
+                        s.send(str(edit_det).encode())
+                        log_crd = edit_det
+                        continue
 
-        while True:
-            usr=cf.usercheck()
-            s.send(str(usr).encode())
-            if usr!="cancel code 913372":
-                check=s.recv(8).decode()
-                if check == "true" :
-                    details=cf.create_acc(usr)
-                    s.send(str(details).encode())
-                    time.sleep(0.1)
-                    if (details != "return code 913372"):
-                        new_acc=bool(False)
-                        new_acc=bool(s.recv(1024).decode)
-                        if (new_acc==True):
-                            sg.popup_ok("Account Successfully created !",keep_on_top=True)
+                    elif (log_choice == 'Change Password'):
+
+                            while True:
+                                curr_passwd=cf.curr_passwd()
+                                if curr_passwd=='error code 913372':
+                                    s.send(curr_passwd.encode())
+                                    break
+
+                                s.send(curr_passwd.encode())
+                                passwd_match=(s.recv(16).decode())
+
+                                if(passwd_match=='True'):
+                                    new_pass=cf.chng_passwd(log_crd)
+                                    log_crd=cf.log_crd()
+                                    credentials=new_pass
+                                    s.send(new_pass.encode())
+                                    sg.popup("Password Changed !",keep_on_top=True)
+                                else:
+                                    sg.popup("Wrong Password !", keep_on_top=True)
+                                    continue
+
+                                break
+
+                    elif (log_choice == 'Feedback'):
+                        feed=cf.feedback()
+                        s.send(str(feed).encode())
+                        if (feed!='return code 913372'):
+                            sg.popup("Feedback sent !\nThank you for your thoughts.",keep_on_top=True)
+                        continue
+
+                    elif (log_choice=='Logout' or log_choice==sg.WIN_CLOSED):
+
+                        sg.change_look_and_feel(theme)
+                        exit_f = sg.FlexForm('logout !')  # begin with a blank form
+
+                        layout = [
+                            [sg.Text('Are you sure you want to Logout ? \n')],
+                            [sg.Button("Logout"), sg.Button("Cancel")]
+                        ]
+                        button, values = exit_f.Layout(layout).Read()
+                        if (button == "Logout"):
+                            ext = True
+                        else:
+                            ext = False
+                        exit_f.Close()
+
+                        s.send(str(ext).encode())
+
+                        if (ext == True):
                             break
+                        else:
+                            continue
 
-                        else :
-                            sg.popup_ok("Some error occured !",keep_on_top=True)
-                            break
+        #########################################################
 
+        ###################### Create account ########################
+
+        elif menu=='Create Account':
+
+            while True:
+                usr=cf.usercheck()
+                s.send(str(usr).encode())
+                if usr!="cancel code 913372":
+                    check=s.recv(8).decode()
+                    if check == "true" :
+                        details=cf.create_acc(usr)
+                        s.send(str(details).encode())
+                        time.sleep(0.1)
+                        if (details != "return code 913372"):
+                            new_acc=bool(False)
+                            new_acc=bool(s.recv(1024).decode)
+                            if (new_acc==True):
+                                sg.popup_ok("Account Successfully created !",keep_on_top=True)
+                                break
+
+                            else :
+                                sg.popup_ok("Some error occured !",keep_on_top=True)
+                                break
+
+                    else :
+                        sg.popup_ok("Username already taken !\nTry a different one",keep_on_top=True)
                 else :
-                    sg.popup_ok("Username already taken !\nTry a different one",keep_on_top=True)
-            else :
-                break
+                    break
 
-    ####################################################
+        ####################################################
 
-    ###################### Exit ########################
-    elif menu=='Exit' or menu==sg.WIN_CLOSED:
-        sg.change_look_and_feel(theme)
-        exit_f = sg.FlexForm('Exit !')  # begin with a blank form
+        ###################### Exit ########################
+        elif menu=='Exit' or menu==sg.WIN_CLOSED:
+            sg.change_look_and_feel(theme)
+            exit_f = sg.FlexForm('Exit !')  # begin with a blank form
 
-        layout = [
-            [sg.Text('Are you sure you want to exit ? \n')],
-            [sg.Button("Exit"), sg.Button("Cancel")]
-        ]
-        button, values = exit_f.Layout(layout).Read()
-        ext=button
-        exit_f.Close()
-        s.send(str(ext).encode())
-        if (ext=='Cancel'or ext==sg.WIN_CLOSED):
-            cont=True
+            layout = [
+                [sg.Text('Are you sure you want to exit ? \n')],
+                [sg.Button("Exit"), sg.Button("Cancel")]
+            ]
+            button, values = exit_f.Layout(layout).Read()
+            ext=button
+            exit_f.Close()
+            s.send(str(ext).encode())
+            if (ext=='Cancel'or ext==sg.WIN_CLOSED):
+                cont=True
 
-        elif (ext == 'Exit' ):
-            cont = False
+            elif (ext == 'Exit' ):
+                cont = False
 
-    ####################################################
+        ####################################################
 
-    ######################## Menu end #############################
+        ######################## Menu end #############################
 
-    if cont==False:
-        s.send("False".encode())
-        break
+        if cont==False:
+            s.send("False".encode())
+            break
 
-    else:
-        s.send("True".encode())
-        continue
+        else:
+            s.send("True".encode())
+            continue
 
-s.close()
+    s.close()
+
+except socket.timeout:
+    sg.popup_ok("Failed to connect to the host !")

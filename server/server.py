@@ -17,7 +17,9 @@ qt=False
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 host = "127.0.0.1"  # ip of socket
-port=8080           # port no of socket
+port=8014           # port no of socket
+
+s.settimeout(1)
 
 s.bind((host,port)) # creating socket
 
@@ -26,18 +28,20 @@ s.listen(5)         # listening for connections
 #######################################################################
 
 def recieve():
-    global c,qt,thread
+    global c,qt
     th = threading.Thread(target=serverGUI)     # GUI thread
     th.start()                                  # Starting GUI thread
-    while qt==False:
-        connection, addr = s.accept()  # Establish connection with client.
-        print('Got connection from', addr)
-        ad.append(str(addr))           # connection added to address list
-        connection.send("Thank you for connecting".encode())
-        thread=threading.Thread(target=server,args=(connection,addr,))
-        thread.start()
-    if qt==True:
-        sys.exit(1)
+    while True:
+        try :
+            connection, addr = s.accept()  # Establish connection with client.
+            print('Got connection from', addr)
+            ad.append(str(addr))           # connection added to address list
+            connection.send("Thank you for connecting".encode())
+            thread=threading.Thread(target=server,args=(connection,addr,))
+            thread.start()
+        except socket.timeout:
+            if qt==True:
+                sys.exit(1)
 
 ########################## Server GUI ##################################
 
@@ -177,7 +181,6 @@ def serverGUI():
 
     window.Close()
     qt=True
-    sys.exit(1)
 
 ####################################################################################
 
