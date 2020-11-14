@@ -118,7 +118,7 @@ def serverGUI():
                 [sg.Cancel(font="Ariel 20",size=(15,2))],
                 [sg.Text("")],
             ]
-            button, val = rm.Layout(layout).Read()
+            button,val = rm.Layout(layout).Read()
             if button != sg.WIN_CLOSED and button !="Cancel" :
                 if(sg.popup_ok_cancel("Are you sure you want to remove this item ! ",keep_on_top=True)=="OK"):
                     sf.rm_items(button)
@@ -318,7 +318,7 @@ def server(c,addr):
             continue
         if cont==False:
             c.close() # Close connection
-            sys.exit(1)
+            sys.exit        
 
 #########################################################################
 

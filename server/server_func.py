@@ -91,7 +91,6 @@ def check(usr):
 def new_acc(crd):
     with open("usr.dat","a+") as file:
         file.seek(0)
-        file.write("\n")
         file.write(crd)
         return "True"
 
@@ -214,20 +213,27 @@ def add_items(o,n,c):
 def rm_items(item):
 
     global drinks,food,d_cost,f_cost
+
     for i in range (0,len(drinks)):
+        print(drinks[i],i)
         if item==drinks[i]:
-            drinks.remove(drinks[i])
+            drinks.remove(item)
             d_cost.remove(d_cost[i])
+            break
 
     for i in range (0,len(food)):
+        print(food[i],i)
         if item==food[i]:
-            food.remove(food[i])
+            food.remove(item)
             f_cost.remove(f_cost[i])
+            break
+   
 
     temp=str(drinks)+"\n"+str(d_cost)+"\n"+str(food)+"\n"+str(f_cost)
     fout = open("menu.dat","wt")
     fout.write(temp)
     fout.close()
+
 def read_feedback():
     with open ("feedback.dat","r") as file:
         feed=file.read()
